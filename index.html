@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Niviiii Teddy Love</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root{
+      --rose1:#ff5c86;
+      --rose2:#e11d48;
+      --pinkGlow: rgba(244, 114, 182, 0.35);
+      --card: rgba(255,255,255,0.68);
+    }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #ffe4ec 0%, #fff2f6 50%, #ffffff 100%);
+      color: #3b2b2f;
+    }
+
+    /* Background photo layer */
+    .bg-photo {
+      position: fixed;
+      inset: 0;
+      background-image: url('couple-photo.jpg');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.56;
+      filter: blur(2px) saturate(1.05);
+      transform: scale(1.04);
+      z-index: 0;
+    }
+
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.55), transparent 28%),
+        radial-gradient(circle at 80% 15%, rgba(255,182,193,0.35), transparent 26%),
+        radial-gradient(circle at 60% 80%, rgba(255,255,255,0.28), transparent 32%),
+        linear-gradient(to bottom, rgba(255,240,246,0.52), rgba(255,255,255,0.75));
+      z-index: 1;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card {
+      width: min(960px, 100%);
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.85);
+      border-radius: 34px;
+      padding: 28px;
+      box-shadow: 0 18px 60px rgba(219, 39, 119, 0.16);
+      backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scene {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .teddy-row {
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      gap: 16px;
+      min-height: 320px;
+      position: relative;
+      transition: transform 0.8s ease;
+    }
+
+    .message {
+      min-height: 56px;
+      text-align: center;
+      color: #be185d;
+      font-size: clamp(22px, 3vw, 38px);
+      font-weight: 700;
+      padding: 0 10px;
+      line-height: 1.3;
+      text-shadow: 0 2px 18px rgba(255,255,255,0.55);
+    }
+
+    .button-stage {
+      position: relative;
+      margin-top: 8px;
+      width: min(560px, 100%);
+      height: 230px;
+      border-radius: 28px;
+      border: 1px solid rgba(255,228,239,0.95);
+      background: linear-gradient(to bottom, rgba(255,241,246,0.78), rgba(255,233,241,0.78));
+      box-shadow: inset 0 3px 16px rgba(190, 24, 93, 0.06);
+      overflow: hidden;
+    }
+
+    .love-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 34px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: pointer;
+      background: linear-gradient(135deg, #fb7185, #e11d48);
+      box-shadow: 0 10px 24px rgba(225, 29, 72, 0.28);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, left 0.28s ease, top 0.28s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .love-btn:hover { transform: scale(1.06); }
+    .love-btn:active { transform: scale(0.95); }
+
+    #yesBtn {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 30px;
+    }
+
+    #noBtn {
+      position: absolute;
+      top: 100px;
+      left: 210px;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #db2777;
+      font-weight: 600;
+      text-align: center;
+      min-height: 22px;
+    }
+
+    /* Floating background elements */
+    .float-hearts, .sparkles, .bubbles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .heart, .sparkle, .bubble {
+      position: absolute;
+      bottom: -60px;
+      opacity: 0;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+
+    .heart {
+      font-size: 18px;
+      animation-name: riseHeart;
+    }
+
+    .sparkle {
+      font-size: 12px;
+      animation-name: twinkleFloat;
+    }
+
+    .bubble {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      box-shadow: 0 0 18px rgba(255,255,255,0.45);
+      animation-name: riseBubble;
+    }
+
+    @keyframes riseHeart {
+      0% { transform: translateY(0) scale(0.7) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.9; }
+      100% { transform: translateY(-115vh) scale(1.2) rotate(20deg); opacity: 0; }
+    }
+
+    @keyframes twinkleFloat {
+      0% { transform: translateY(0) scale(0.6); opacity: 0; }
+      20% { opacity: 0.8; }
+      60% { opacity: 1; }
+      100% { transform: translateY(-105vh) scale(1.2); opacity: 0; }
+    }
+
+    @keyframes riseBubble {
+      0% { transform: translateY(0) translateX(0) scale(0.8); opacity: 0; }
+      20% { opacity: 0.55; }
+      100% { transform: translateY(-110vh) translateX(28px) scale(1.4); opacity: 0; }
+    }
+
+    @keyframes floaty {
+      0%,100% { transform: translateY(0px); }
+      50% { transform: translateY(-11px); }
+    }
+
+    @keyframes blink {
+      0%, 45%, 100% { transform: scaleY(1); }
+      48%, 52% { transform: scaleY(0.1); }
+    }
+
+    @keyframes handWave {
+      0%,100% { transform: rotate(18deg); }
+      50% { transform: rotate(-10deg); }
+    }
+
+    @keyframes teddyGlow {
+      0%,100% { filter: drop-shadow(0 0 0px rgba(255,255,255,0.2)); }
+      50% { filter: drop-shadow(0 0 14px rgba(255,192,203,0.55)); }
+    }
+
+    @keyframes bounceLove {
+      0%,100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-8px) scale(1.03); }
+    }
+
+    @keyframes cuddleMoveLeft {
+      to { transform: translateX(48px) scale(1.02); }
+    }
+
+    @keyframes cuddleMoveRight {
+      to { transform: translateX(-48px) scale(1.02); }
+    }
+
+    @keyframes kissPop {
+      0% { transform: scale(0.6); opacity: 0; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .teddy {
+      position: relative;
+      width: 190px;
+      height: 280px;
+      animation: floaty 2.6s ease-in-out infinite, teddyGlow 3.2s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+
+    .teddy.accepted.male { animation: cuddleMoveLeft 0.8s forwards, teddyGlow 2s ease-in-out infinite; }
+    .teddy.accepted.female { animation: cuddleMoveRight 0.8s forwards, teddyGlow 2s ease-in-out infinite; }
+
+    .ear {
+      position: absolute;
+      top: 10px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #8b5e3c;
+    }
+
+    .male .head, .male .body, .male .arm, .male .leg, .male .ear { background: #b37a4c; }
+    .female .head, .female .body, .female .arm, .female .leg, .female .ear { background: #c88b55; }
+
+    .ear.left { left: 34px; }
+    .ear.right { right: 34px; }
+
+    .head {
+      position: absolute;
+      left: 50%;
+      top: 28px;
+      width: 116px;
+      height: 116px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      box-shadow: 0 6px 10px rgba(0,0,0,0.08);
+    }
+
+    .face {
+      position: absolute;
+      left: 50%;
+      top: 58px;
+      transform: translateX(-50%);
+      width: 42px;
+      height: 36px;
+      border-radius: 42%;
+      background: #f8dfc9;
+    }
+
+    .eye {
+      position: absolute;
+      top: 42px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #1f2937;
+      animation: blink 3.5s infinite;
+    }
+
+    .eye.left { left: 24px; }
+    .eye.right { right: 24px; }
+
+    .nose {
+      position: absolute;
+      left: 50%;
+      top: 9px;
+      transform: translateX(-50%);
+      width: 15px;
+      height: 12px;
+      border-radius: 50%;
+      background: #2f2f2f;
+    }
+
+    .smile {
+      position: absolute;
+      left: 50%;
+      top: 20px;
+      width: 20px;
+      height: 11px;
+      transform: translateX(-50%);
+      border-bottom: 2px solid #2f2f2f;
+      border-radius: 0 0 18px 18px;
+    }
+
+    .body {
+      position: absolute;
+      left: 50%;
+      top: 138px;
+      transform: translateX(-50%);
+      width: 112px;
+      height: 104px;
+      border-radius: 46%;
+    }
+
+    .arm {
+      position: absolute;
+      top: 150px;
+      width: 26px;
+      height: 74px;
+      border-radius: 999px;
+      transform-origin: top center;
+    }
+
+    .male .arm.left { left: 18px; animation: handWave 1.4s ease-in-out infinite; }
+    .male .arm.right { right: 18px; }
+    .female .arm.left { left: 18px; }
+    .female .arm.right { right: 18px; animation: bounceLove 1.7s ease-in-out infinite; }
+
+    .accepted.male .arm.left {
+      animation: none;
+      transform: rotate(36deg) translate(16px, 0px);
+    }
+
+    .accepted.female .arm.right {
+      animation: none;
+      transform: rotate(-36deg) translate(-16px, 0px);
+    }
+
+    .leg {
+      position: absolute;
+      bottom: 6px;
+      width: 28px;
+      height: 78px;
+      border-radius: 999px;
+    }
+
+    .leg.left { left: 58px; }
+    .leg.right { right: 58px; }
+
+    .icon {
+      position: absolute;
+      left: 50%;
+      top: 154px;
+      transform: translateX(-50%);
+      font-size: 28px;
+      animation: bounceLove 1.8s ease-in-out infinite;
+    }
+
+    .bow {
+      position: absolute;
+      left: 50%;
+      top: -8px;
+      transform: translateX(-50%);
+      font-size: 32px;
+      animation: bounceLove 2.2s ease-in-out infinite;
+    }
+
+    .mid-icon {
+      font-size: 46px;
+      margin-bottom: 74px;
+      animation: bounceLove 1.8s ease-in-out infinite;
+    }
+
+    .kiss {
+      position: absolute;
+      left: 50%;
+      top: 70px;
+      transform: translateX(-50%);
+      font-size: 32px;
+      opacity: 0;
+    }
+
+    .accepted .kiss {
+      animation: kissPop 0.85s ease forwards;
+    }
+
+    .tiny-note {
+      font-size: 12px;
+      color: #9d174d;
+      margin-top: 14px;
+      opacity: 0.8;
+      text-align: center;
+    }
+
+    @media (max-width: 700px) {
+      .card { padding: 20px; border-radius: 26px; }
+      .teddy-row { min-height: 270px; gap: 8px; }
+      .teddy { width: 150px; height: 230px; }
+      .head { width: 96px; height: 96px; top: 26px; }
+      .face { top: 49px; width: 36px; height: 30px; }
+      .eye { top: 34px; }
+      .body { top: 118px; width: 92px; height: 86px; }
+      .arm { top: 126px; height: 64px; width: 22px; }
+      .leg { height: 62px; width: 24px; }
+      .leg.left { left: 48px; }
+      .leg.right { right: 48px; }
+      .icon { top: 130px; font-size: 24px; }
+      .mid-icon { font-size: 38px; margin-bottom: 58px; }
+      .button-stage { height: 210px; }
+      #noBtn { left: 140px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-photo"></div>
+  <div class="bg-overlay"></div>
+
+  <div class="float-hearts" id="heartLayer"></div>
+  <div class="sparkles" id="sparkleLayer"></div>
+  <div class="bubbles" id="bubbleLayer"></div>
+
+  <div class="page">
+    <div class="card">
+      <div class="scene">
+        <div class="teddy-row">
+          <div id="maleTeddy" class="teddy male">
+            <div class="ear left"></div>
+            <div class="ear right"></div>
+            <div class="head">
+              <div class="eye left"></div>
+              <div class="eye right"></div>
+              <div class="face">
+                <div class="nose"></div>
+                <div class="smile"></div>
+              </div>
+            </div>
+            <div class="body"></div>
+            <div class="arm left"></div>
+            <div class="arm right"></div>
+            <div class="leg left"></div>
+            <div class="leg right"></div>
+            <div class="icon">💙</div>
+          </div>
+
+          <div id="midIcon" class="mid-icon">💭</div>
+
+          <div id="femaleTeddy" class="teddy female">
+            <div class="ear left"></div>
+            <div class="ear right"></div>
+            <div class="head">
+              <div class="bow">🎀</div>
+              <div class="eye left"></div>
+              <div class="eye right"></div>
+              <div class="face">
+                <div class="nose"></div>
+                <div class="smile"></div>
+              </div>
+              <div class="kiss">😘</div>
+            </div>
+            <div class="body"></div>
+            <div class="arm left"></div>
+            <div class="arm right"></div>
+            <div class="leg left"></div>
+            <div class="leg right"></div>
+            <div class="icon">💖</div>
+          </div>
+        </div>
+
+        <div id="message" class="message">Niviiiiiiii,, do you love me ?</div>
+
+        <div class="button-stage" id="stage">
+          <button class="love-btn" id="yesBtn">Yes</button>
+          <button class="love-btn" id="noBtn">No</button>
+        </div>
+
+        <div id="status" class="status"></div>
+       </div>
+    </div>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const stage = document.getElementById("stage");
+    const message = document.getElementById("message");
+    const statusText = document.getElementById("status");
+    const maleTeddy = document.getElementById("maleTeddy");
+    const femaleTeddy = document.getElementById("femaleTeddy");
+    const midIcon = document.getElementById("midIcon");
+
+    let accepted = false;
+    let noCount = 0;
+
+    function moveButton() {
+      if (accepted) return;
+      const stageRect = stage.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+      const maxX = Math.max(10, stageRect.width - btnRect.width - 12);
+      const maxY = Math.max(10, stageRect.height - btnRect.height - 12);
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+      noCount += 1;
+      const lines = [
+        "Aiyo... the No button escaped 😄",
+        "No is doing parkour now 💨",
+        "Still running away 💖",
+        "That button has commitment issues 🤭"
+      ];
+      statusText.textContent = lines[(noCount - 1) % lines.length];
+    }
+
+    noBtn.addEventListener("mouseover", moveButton);
+    noBtn.addEventListener("click", moveButton);
+    noBtn.addEventListener("touchstart", function(e) {
+      e.preventDefault();
+      moveButton();
+    }, { passive: false });
+
+    yesBtn.addEventListener("click", () => {
+      if (accepted) return;
+      accepted = true;
+      maleTeddy.classList.add("accepted");
+      femaleTeddy.classList.add("accepted");
+      message.textContent = "I know buttuuu ! 😘😘😘😘😘";
+      statusText.textContent = "Mission cuddle accomplished 💞";
+      midIcon.textContent = "💋";
+      noBtn.style.display = "none";
+      burstHearts(18);
+    });
+
+    function createFloating(layerId, content, className, count, minDur, maxDur, sizeMin, sizeMax) {
+      const layer = document.getElementById(layerId);
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement("div");
+        el.className = className;
+        if (content) el.textContent = content[i % content.length];
+        const left = Math.random() * 100;
+        const duration = minDur + Math.random() * (maxDur - minDur);
+        const delay = Math.random() * 8;
+        const size = sizeMin + Math.random() * (sizeMax - sizeMin);
+        el.style.left = left + "%";
+        el.style.animationDuration = duration + "s";
+        el.style.animationDelay = delay + "s";
+        el.style.fontSize = size + "px";
+        if (className === "bubble") {
+          el.style.width = size + "px";
+          el.style.height = size + "px";
+          el.style.opacity = "0";
+        }
+        layer.appendChild(el);
+      }
+    }
+
+    createFloating("heartLayer", ["💖","💕","💗","💘"], "heart", 18, 8, 14, 14, 22);
+    createFloating("sparkleLayer", ["✨","✦","⋆"], "sparkle", 20, 7, 13, 10, 18);
+    createFloating("bubbleLayer", [""], "bubble", 16, 9, 16, 10, 22);
+
+    function burstHearts(count) {
+      const layer = document.getElementById("heartLayer");
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement("div");
+        el.className = "heart";
+        el.textContent = ["💖","💕","💘","💗"][i % 4];
+        el.style.left = (38 + Math.random() * 24) + "%";
+        el.style.bottom = "28%";
+        el.style.fontSize = (18 + Math.random() * 18) + "px";
+        el.style.animationDuration = (3 + Math.random() * 2) + "s";
+        el.style.animationDelay = (Math.random() * 0.4) + "s";
+        layer.appendChild(el);
+        setTimeout(() => el.remove(), 6500);
+      }
+    }
+
+    moveButton();
+    window.addEventListener("resize", moveButton);
+  </script>
+</body>
+</html>
